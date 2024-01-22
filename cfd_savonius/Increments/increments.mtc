@@ -33,21 +33,21 @@
 { CorpsInc=                                  
     { Type= ModeleDeModeles }     
     { Dependance=  
-        { Maillage= MaillagePrincipal } 
-        { Modele= Interacteur } 
+		{ Maillage= MaillagePrincipal } 
+		{ Modele= Interacteur } 
 				
 		{ Modele= CLMecanique }  	
 		{ Modele= NavierStokes }
 		{ Modele= UpdateV }	
 			
 			  
-	 \\   { Modele= DeLaFonction }
-     \\ 	{ Modele= Adaptateur }
-	\\	{ Modele= Geometres }
+		{ Modele= DeLaFonction }
+		{ Modele= Adaptateur }
+		{ Modele= Geometres }
 
-        { Modele= DragLift }
+		{ Modele= DragLift }
 			   
-	  	{ Modele= Sorties }
+		{ Modele= Sorties }
 		{ Modele= GestionTemps }  
 		
     }

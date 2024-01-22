@@ -55,7 +55,7 @@ class savonius():
         os.makedirs(self.msh_path)
         os.makedirs(self.t_mesh_path)
         
-        os.system('cp -r cfd_savonius ' + self.output_path + '.')
+        os.system('cp -r cfd_savonius ' + self.output_path + '.')   # A quoi sert cette ligne ???
         
         # Convert action to coordinates 		
         control_parameters = np.array(x)
@@ -208,7 +208,7 @@ class savonius():
             finesse = np.array(L_finesse)  # 
         
 
-        begin_take_reward = 0 # When we begin to take the reward 
+        begin_take_reward = 150 # When we begin to take the reward 
 
 
         # Compute new reward
@@ -228,7 +228,7 @@ class savonius():
         f.write(str(self.episode)+'\t'+str(self.M)+'\t'+str(control_parameters[1])+'\t'+str(control_parameters[2])+'\t'+str(control_parameters[3])+'\t'+str(self.finesse_moy)+'\t'+str(self.finesse_max)+'\t'+str(self.reward)+'\n')
         f.close()
 		
-        self.episode      += 1#new
+        self.episode      += 1 #new
         
         return self.reward
 

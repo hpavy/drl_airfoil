@@ -4,7 +4,7 @@
 
 { Target= PasDeTemps 0.05 } 
      
-{ Target= TempsFin 22.5 }
+{ Target= TempsFin 10 } // on a 200 incréments
 { Target= FrequenceStockage_vtk 5 } 
 
 
@@ -26,4 +26,4 @@
 { Target= MinNorme 0.0001 }  0.05
 { Target= Err1 0.1 }  1
 { Target= Err2 0.005 }  0.01
-{ Target= Adaptateur 1 }
+{ Target= Adaptateur 5 }
