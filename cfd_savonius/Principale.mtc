@@ -54,7 +54,6 @@ Solveur
 { Fichier5: Solveur/CLMecanique.mtc }
 { Fichier10: Solveur/fonctionAnalytique.mtc }
 { Fichier20: DragLift/DragLift.mtc }
-{ Fichier24: Torque/Torque.mtc }
 
 IO	
 { Fichier8: IO/output.mtc }

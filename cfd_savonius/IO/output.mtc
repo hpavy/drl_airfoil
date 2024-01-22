@@ -31,9 +31,6 @@
 	   { Champ= AppartientEntree5 }
        { Champ= LevelSetEntree5 }
 	   { Champ= LevelSetEntree5Filtree }
-
-       { Champ= LocalTorque }
-       { Champ= Grad }
 	  
 	   
 

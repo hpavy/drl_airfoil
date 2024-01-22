@@ -23,12 +23,12 @@
       { Modele= GeoP4 }
       { Modele= DistanceP4 }
 
-	  { Modele= RotationP5 } // DefinitionP5
+	  { Modele= DefinitionP5 } // DefinitionP5
 	  { Modele= GeoP5 }
 	  { Modele= DistanceP5 }
 	
-	  { Modele= OpposeAppartient }//with old mtcexe
-	  { Modele= OpposeLevelSet }//with old mtcexe  
+	 // { Modele= OpposeAppartient }//with old mtcexe
+	 // { Modele= OpposeLevelSet }//with old mtcexe  
     
 	  { Modele= CalculeLSFiltree }	        
 	  
@@ -334,36 +334,6 @@
 
 // ## 5
 
-// Turbine en rotation forcee
-
-{ RotationP5=
-  { Type= ModeleDeMouvements }
-  { Affichage= 1 }
-  { Data=
-
-	{ Repere=
-			{ Dimension= 2 }
-			{ Nom= Entree5 }
-			{ Origine= 4 4 }
-			{ Axes= 1 0 0 1 } 
-	}
- 
-    { SolveurMouvement=
-      { Dimension= 2 }
-      { Type= SMRotation }
-      { Data=
-        { Axe= 2 }
-      	{ NbChampParametre= 2 }
-		{ ChampParametre= PasDeTemps VitesseRotation }
-      }
-    }
-  }
-  { Dependance= 
-    { Maillage= MaillagePrincipal }
-    { Champ= PasDeTemps }
-    { Champ= VitesseRotation }
-  }
-}
 
 
 // Turbine fixe
@@ -394,7 +364,7 @@
 				{ Forme=
 					{ Type= FormeNewMaillageBis }
 					{ Data=
-						{ M: turbine.t }
+						{ M: airfoil.t }
 						{ Localisation=
 							{ Brique= Boite }
 							{ Methode= Lineaire }
@@ -408,7 +378,7 @@
     }
     { Dependance=
         { Maillage= MaillagePrincipal }
-        { Modele= RotationP5 } // DefinitionP5
+        { Modele= DefinitionP5 } // DefinitionP5
     }
 }
 
@@ -477,19 +447,19 @@
 }
 
 
-{ OpposeAppartient=
-    { Type= ModeleArithmetique }
-
-        { Data=
-                { Champ=
-                        { Type= P1_Scalaire_Par }
-                        { Nom= Oppose }
-                        { Data= ValeurItem 1 0 }
-                }
-
-        }
-		{ Dependance=
-                { Maillage= MaillagePrincipal }
+//{ OpposeAppartient=
+  //  { Type= ModeleArithmetique }
+//
+  //      { Data=
+    //            { Champ=
+      //                  { Type= P1_Scalaire_Par }
+        //                { Nom= Oppose }
+          //              { Data= ValeurItem 1 0 }
+            //    }
+//
+  //      }
+	//	{ Dependance=
+     //           { Maillage= MaillagePrincipal }
                 { Champ= AppartientEntree5 }
 				{ Champ= mVs }
 				{ Champ= Un }

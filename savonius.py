@@ -44,13 +44,13 @@ class savonius():
 
         # Create folders and copy cfd (please kill me)
         # On met les résultats là dedans 
-        self.output_path = self.path+'/'+str(ep)+'/'
+        self.output_path = self.path+'/'+str(ep)+'/'  # Pour chaque épisode
         self.vtu_path    = self.output_path+'vtu/'
-        self.torque_path   = self.output_path+'Torque/'
+        self.effort   = self.output_path+'effort/'
         self.msh_path   = self.output_path+'msh/'
         self.t_mesh_path   = self.output_path+'t_mesh/'
         
-        os.makedirs(self.torque_path)
+        os.makedirs(self.effort)
         os.makedirs(self.vtu_path)
         os.makedirs(self.msh_path)
         os.makedirs(self.t_mesh_path)
@@ -128,19 +128,7 @@ class savonius():
             control_pts[i+1] = unordered[int(n_control_pts/2 - i - 1)]
             control_pts[i+(int(n_control_pts/2)+1)] = unordered[-i-1]
 
-        east_control_pts = np.zeros(control_pts.shape)
-        north_control_pts = np.zeros(control_pts.shape)
-        south_control_pts = np.zeros(control_pts.shape)
-        for i in range(n_control_pts):
-            east_control_pts[i,0] = -control_pts[i,0]
-            east_control_pts[i,1] = -control_pts[i,1]
-            
-            north_control_pts[i,0] = -control_pts[i,1]
-            north_control_pts[i,1] = control_pts[i,0]
-            
-            south_control_pts[i,0] = control_pts[i,1]
-            south_control_pts[i,1] = -control_pts[i,0]
-
+        
         mesh_size = 0.005 # Mesh size
         try:
             # Init GMSH
@@ -157,39 +145,17 @@ class savonius():
                 shapepoints.append(model.geo.addPoint(control_pts[j,0], control_pts[j,1], 0.0,mesh_size))
             shapepoints.append(shapepoints[0])
 
-            east_shapepoints = []
-            for j in range(len(east_control_pts)):
-                east_shapepoints.append(model.geo.addPoint(east_control_pts[j,0], east_control_pts[j,1], 0.0,mesh_size))
-            east_shapepoints.append(east_shapepoints[0])
             
-            north_shapepoints = []
-            for j in range(len(north_control_pts)):
-                north_shapepoints.append(model.geo.addPoint(north_control_pts[j,0], north_control_pts[j,1], 0.0,mesh_size))
-            north_shapepoints.append(north_shapepoints[0])
-            
-            south_shapepoints = []
-            for j in range(len(south_control_pts)):
-                south_shapepoints.append(model.geo.addPoint(south_control_pts[j,0], south_control_pts[j,1], 0.0,mesh_size))
-            south_shapepoints.append(south_shapepoints[0])
 
             # Curveloop using splines
             shapespline = model.geo.addSpline(shapepoints)
             model.geo.addCurveLoop([shapespline],1)
             
-            east_shapespline = model.geo.addSpline(east_shapepoints)
-            model.geo.addCurveLoop([east_shapespline],2)
             
-            north_shapespline = model.geo.addSpline(north_shapepoints)
-            model.geo.addCurveLoop([north_shapespline],3)
-            
-            south_shapespline = model.geo.addSpline(south_shapepoints)
-            model.geo.addCurveLoop([south_shapespline],4)
 
             # Surface  
             model.geo.addPlaneSurface([1],1)
-            model.geo.addPlaneSurface([2],2)
-            model.geo.addPlaneSurface([3],3)
-            model.geo.addPlaneSurface([4],4)
+            
 
 
             # This command is mandatory and synchronize CAD with GMSH Model. The less you launch it, the better it is for performance purpose
@@ -201,7 +167,7 @@ class savonius():
             # Mesh (2D)
             model.mesh.generate(2)
             # Write on disk
-            gmsh.write(self.output_path+'cfd_savonius/turbine.msh')
+            gmsh.write(self.output_path+'cfd_savonius/airfoil.msh')
 
             # Finalize GMSH
             gmsh.finalize()
@@ -214,15 +180,15 @@ class savonius():
 
         # convert to .t
         os.system('cd '+self.output_path+'cfd_savonius ; python3 gmsh2mtc.py')
-        os.system('cd '+self.output_path+'cfd_savonius ; cp -r turbine.msh ../msh')
+        os.system('cd '+self.output_path+'cfd_savonius ; cp -r airfoil.msh ../msh')
         os.system('cd '+self.output_path+'cfd_savonius ; module load cimlibxx/master')
-        os.system('cd '+self.output_path+'cfd_savonius ; echo 0 | mtcexe turbine.t')
-        os.system('cd '+self.output_path+'cfd_savonius ; cp -r turbine.t ../t_mesh')
+        os.system('cd '+self.output_path+'cfd_savonius ; echo 0 | mtcexe airfoil.t')
+        os.system('cd '+self.output_path+'cfd_savonius ; cp -r airfoil.t ../t_mesh')
         
         # Solve problem using cimlib and move vtu and drag folder
         os.system('cd '+self.output_path+'cfd_savonius/.; touch run.lock; mpirun -n 8 /softs/cemef/cimlibxx/master/bin/cimlib_CFD_driver Principale.mtc > trash.txt;')
         os.system('mv '+self.output_path+'cfd_savonius/Resultats/2d/* '+self.vtu_path+'.')
-        os.system('mv '+self.output_path+'cfd_savonius/Resultats/Torque.txt '+self.torque_path+'.')
+        os.system('mv '+self.output_path+'cfd_savonius/Resultats/Efforts.txt '+self.effort+'.')
         os.system('rm -r '+self.output_path+'cfd_savonius')
         
         # Save
@@ -230,47 +196,36 @@ class savonius():
         os.system('mv ./video/bulles_00450.vtu '+'./video/video_'+str(self.episode)+'.vtu')
   
         # Compute reward
-        with open('./cfd_savonius/Resultats/Variables.txt', 'r') as f:
+        with open('./cfd_savonius/Resultats/Efforts.txt', 'r') as f:
             next(f) # Skip header
             for line in f:
-                r = float(line.split('\t')[0])
-                rho = float(line.split('\t')[5])
-                eta = float(line.split('\t')[6])
-                Vair = float(line.split('\t')[7])
-                Vrot = float(line.split('\t')[8])
+                L_finesse = [] 
+                f.readline()
+                for ligne in f :
+                    a,b, cx, cy = ligne.split()
+                    cx, cy = -float(cx), -float(cy)
+                    L_finesse.append(cy/cx)
+            finesse = np.array(L_finesse)  # 
         
-        # Results retrieval
-        Alpha = 0.8
-        Beta = 0.2
-        T = np.zeros(0)
-        time = np.zeros(0)
 
-        with open(self.torque_path+'Torque.txt', 'r') as f:
-            next(f) # Skip header
-            for line in f:
-                T = np.append(T, float(line.split('\t')[2]))
-                time = np.append(time, float(line.split('\t')[1]))
+        begin_take_reward = 0 # When we begin to take the reward 
 
-        # Compute power coefficient
-        iStart = 140
-        Cp = np.zeros(np.shape(T[iStart:])[0])
-        Cp = (T[iStart:]*Vrot)/(r*rho*Vair**3)
-        Cp_moy = np.average(Cp)
-        Cp_max = np.amax(Cp)
-        self.cp_moy = Cp_moy
-        self.cp_max = Cp_max
 
         # Compute new reward
-        self.reward = Alpha*Cp_moy + Beta*Cp_max
+        self.reward = finesse[begin_take_reward:].mean()
+        self.finesse_moy = finesse[begin_take_reward:].mean()
+        self.finesse_max = finesse[begin_take_reward:].max()
+
         
+        # On écrit dans le gros fichier
         # Write (d, L, R, e, Reward, Cp) in a txt
         print(os.path)
         if not os.path.isfile('Values.txt'):
             f = open('Values.txt','w')
-            f.write('Index'+'\t'+'Camber'+'\t'+'T1'+'\t'+'T2'+'\t'+'T3'+'\t'+'Cp_moy'+'\t'+'Cp_max'+'\t'+'Reward'+'\n')
+            f.write('Index'+'\t'+'Camber'+'\t'+'T1'+'\t'+'T2'+'\t'+'T3'+'\t'+'finesse_moy'+'\t'+'finesse_max'+'\t'+'Reward'+'\n')
         else:
             f = open('Values.txt','a')
-        f.write(str(self.episode)+'\t'+str(self.M)+'\t'+str(control_parameters[1])+'\t'+str(control_parameters[2])+'\t'+str(control_parameters[3])+'\t'+str(self.cp_moy)+'\t'+str(self.cp_max)+'\t'+str(self.reward)+'\n')
+        f.write(str(self.episode)+'\t'+str(self.M)+'\t'+str(control_parameters[1])+'\t'+str(control_parameters[2])+'\t'+str(control_parameters[3])+'\t'+str(self.finesse_moy)+'\t'+str(self.finesse_max)+'\t'+str(self.reward)+'\n')
         f.close()
 		
         self.episode      += 1#new

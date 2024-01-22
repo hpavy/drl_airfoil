@@ -41,12 +41,11 @@
 		{ Modele= UpdateV }	
 			
 			  
-	    { Modele= DeLaFonction }
-      	{ Modele= Adaptateur }
-		{ Modele= Geometres }
+	 \\   { Modele= DeLaFonction }
+     \\ 	{ Modele= Adaptateur }
+	\\	{ Modele= Geometres }
 
         { Modele= DragLift }
-        { Modele= Torque } 
 			   
 	  	{ Modele= Sorties }
 		{ Modele= GestionTemps }  

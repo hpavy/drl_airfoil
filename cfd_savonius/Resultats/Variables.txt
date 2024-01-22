@@ -1,2 +1,0 @@
-R_turb	L	H	CenterX	CenterY	Rho1	Eta1	VitesseAir	VitesseRotation	
-0.9	14	8	4	4	1	0.001	1	-1	
