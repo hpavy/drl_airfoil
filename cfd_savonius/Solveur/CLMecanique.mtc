@@ -1,0 +1,80 @@
+{ CLMecanique=
+    { Type= ModeleCLSurGeometres }
+    { Data=
+        { Entite= NOEUDS }
+        
+        { ConditionLimite=
+            { Nom= Entree1 }
+            { Type= CLDirichlet }
+            { Appartient= AppartientEntree1 }
+            { NbChamps= 3 }
+		    { Degres= Un Un Zero }
+		    { Valeurs= VitesseAir Zero Zero } 
+            { Priorite= 2 }
+              
+        }
+		
+          { ConditionLimite=
+            { Nom= Entree2 }
+            { Type= CLDirichlet }
+            { Appartient= AppartientEntree2 }
+            { NbChamps= 3 }
+		    { Degres= Zero Un Zero }
+		    { Valeurs= Zero Zero Zero } 
+            { Priorite= 1 }
+              
+         } 
+		  { ConditionLimite=
+            { Nom= Entree3 }
+            { Type= CLDirichlet }
+            { Appartient= AppartientEntree3 }
+            { NbChamps= 3 }
+		    { Degres= Zero Zero Zero }
+		    { Valeurs= Zero Zero Zero }
+            { Priorite= 1 }
+              
+         } 
+		 
+		  { ConditionLimite=
+            { Nom= Entree4 }
+            { Type= CLDirichlet }
+            { Appartient= AppartientEntree4 }
+            { NbChamps= 3 }
+		    { Degres= Zero Un Zero }
+		    { Valeurs= Zero Zero Zero } 
+            { Priorite= 1 }
+              
+         }		 
+		 { ConditionLimite=
+            { Nom= Entree5 }
+            { Type= CLDirichlet }
+            { Appartient= AppartientEntree5 }
+            { NbChamps= 3 }
+		    { Degres= Un Un Zero }
+		    { Valeurs= Zero Zero Zero } 
+            { Priorite= 2 }
+              
+         }
+		
+	
+   }  
+   
+	{ Precision= PrecisionFrontieres }
+    { Dependance=
+            { Maillage= MaillagePrincipal }
+       	    
+		 	{ Champ= AppartientEntree1 }
+			{ Champ= AppartientEntree2 }
+			{ Champ= AppartientEntree3 }
+            { Champ= AppartientEntree4 }	
+			{ Champ= AppartientEntree5 }
+			
+			{ Champ= PrecisionFrontieres }
+			{ Champ= Un }
+			{ Champ= Zero }
+
+            { Champ= VitesseAir }		
+			
+    }
+	
+}

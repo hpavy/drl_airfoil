@@ -1,0 +1,76 @@
+{ Lanceur= monpemiercours } 
+
+
+
+
+
+{ Fichier10: Increments/increments.mtc }
+{ Fichier6: Increments/temps.mtc }
+
+maillage
+
+{ monpemiercours =
+    { Type= ModeleDeModeles }
+
+    { Data=
+		{ Champ=             
+            { Type= P0C_Scalaire_Par }             
+            { Nom= Marge }             
+            { Data= ValeurItem 1 50 }         
+        }  
+		{ Champ=             
+            { Type= P0C_Scalaire_Par }             
+            { Nom= coco }             
+            { Data= ValeurItem 1 4 }         
+        }  		
+    }
+    { Dependance=
+         Modele= CalculsInit 
+        Modele= CapteursInit 
+        { Maillage= MaillagePrincipal }
+        { Modele= Increments }                    
+    }
+
+}
+
+
+{ Fichier4: Maillage/MetriqueGenerale.mtc } Scalaire Vecteur
+{ Fichier7: Maillage/adaptation.mtc }
+{ Fichier16: Maillage/Associateur.mtc }
+{ Fichier9: Maillage/maillage.mtc }
+
+
+
+Geometrie
+{ Fichier14: Geometrie/Geometres.mtc }
+{ Fichier15: Geometrie/GeometresCL.mtc }
+{ Fichier16: Geometrie/GeometresMatiere.mtc }
+{ Fichier16: Geometrie/MakeMatiere.mtc }
+
+Solveur
+
+{ Fichier3: Solveur/Mecanique.mtc }
+{ Fichier12: Solveur/LevelerT.mtc }
+{ Fichier5: Solveur/CLMecanique.mtc }
+{ Fichier10: Solveur/fonctionAnalytique.mtc }
+{ Fichier20: DragLift/DragLift.mtc }
+{ Fichier24: Torque/Torque.mtc }
+
+IO	
+{ Fichier8: IO/output.mtc }
+{ Fichier1: IO/Parametres.mtc }
+{ Fichier17: IO/Interacteur.mtc }
+
+
+Multiphase
+
+{ Fichier11: Multiphase/ModelesAlpha.mtc }
+{ Fichier13: Multiphase/InitAlpha.mtc }
+{ Fichier21: Multiphase/melange.mtc }
+{ Fichier22: Multiphase/gradient.mtc }
+{ Fichier23: Maillage/DeLaFonction.mtc }
+
+{ Fichier166: Geometrie/GeometresE.mtc }
+
+
+
