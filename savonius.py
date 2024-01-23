@@ -19,12 +19,12 @@ class savonius():
         self.obs_size = self.act_size
         self.obs      = np.zeros(self.obs_size)
         # variables: camber and 3 thickness
-        self.x_min    = np.array([0.1,0.02,0.02,0.02])
-        self.x_max    = np.array([0.65,0.08,0.08,0.08])
-        self.x_0      = 0.5*(self.x_min+self.x_max)
+        self.x_min    =  np.array([0.,0.02,0.02,0.02])  # np.array([0.1,0.02,0.02,0.02])
+        self.x_max    =  np.array([0.2,0.08,0.08,0.08])  # np.array([0.65,0.08,0.08,0.08])
+        self.x_0      =  0.5*(self.x_min+self.x_max) # 0.5*(self.x_min+self.x_max)
         self.path     = path
-        self.cp_moy= 0
-        self.cp_max= 0
+        self.finesse_moy= 0
+        self.finesse_max= 0
 
         self.n_points = 8
         self.M = 0.3
@@ -38,6 +38,21 @@ class savonius():
 
         # Set episode number
         self.episode  = 0
+
+
+    def solve_problem_cimlib(self):
+            # Solve problem using cimlib and move vtu and drag folder
+        try :
+            os.system('cd '+self.output_path+'cfd_savonius/.; touch run.lock; mpirun -n 8 /softs/cemef/cimlibxx/master/bin/cimlib_CFD_driver Principale.mtc > trash.txt;')
+            os.system('mv '+self.output_path+'cfd_savonius/Resultats/2d/* '+self.vtu_path+'.')
+            os.system('mv '+self.output_path+'cfd_savonius/Resultats/Efforts.txt '+self.effort+'.')
+            os.system('rm -r '+self.output_path+'cfd_savonius')
+            # Save
+            os.system('cp -r '+self.vtu_path+'bulles_00150.vtu ./video/')
+            os.system('mv ./video/bulles_00150.vtu '+'./video/video_'+str(self.episode)+'.vtu')
+        
+        except : 
+            print('je suis passé') ############ A enlever !!! Juste pour debugger 
 
     ### CFD resolution
     def cfd_solve(self, x, ep):
@@ -185,25 +200,20 @@ class savonius():
         os.system('cd '+self.output_path+'cfd_savonius ; echo 0 | mtcexe airfoil.t')
         os.system('cd '+self.output_path+'cfd_savonius ; cp -r airfoil.t ../t_mesh')
         
-        # Solve problem using cimlib and move vtu and drag folder
-        os.system('cd '+self.output_path+'cfd_savonius/.; touch run.lock; mpirun -n 8 /softs/cemef/cimlibxx/master/bin/cimlib_CFD_driver Principale.mtc > trash.txt;')
-        os.system('mv '+self.output_path+'cfd_savonius/Resultats/2d/* '+self.vtu_path+'.')
-        os.system('mv '+self.output_path+'cfd_savonius/Resultats/Efforts.txt '+self.effort+'.')
-        os.system('rm -r '+self.output_path+'cfd_savonius')
-        
-        # Save
-        os.system('cp -r '+self.vtu_path+'bulles_00150.vtu ./video/')
-        os.system('mv ./video/bulles_00150.vtu '+'./video/video_'+str(self.episode)+'.vtu')
+        self.solve_problem_cimlib()
+
   
         # Compute reward
         with open('./cfd_savonius/Resultats/Efforts.txt', 'r') as f:
             next(f) # Skip header
-            for line in f:
-                L_finesse = [] 
-                f.readline()
-                for ligne in f :
-                    a,b, cx, cy = ligne.split()
-                    cx, cy = -float(cx), -float(cy)
+            L_finesse = [] 
+            f.readline()
+            for ligne in f :
+                a,b, cx, cy = ligne.split()
+                cx, cy = -float(cx), -float(cy)
+                if cx*cy == 0.:
+                    L_finesse.append(-100)  # On a quelque chose de ridicule comme ça   
+                else :
                     L_finesse.append(cy/cx)
             finesse = np.array(L_finesse)  # 
         
