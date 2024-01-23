@@ -52,7 +52,7 @@ class savonius():
             os.system('mv ./video/bulles_00150.vtu '+'./video/video_'+str(self.episode)+'.vtu')
         
         except : 
-            print('je suis passé') ############ A enlever !!! Juste pour debugger 
+            print("La simulation ne s'est pas lancée "s) ############ A enlever !!! Juste pour debugger 
 
     ### CFD resolution
     def cfd_solve(self, x, ep):
@@ -209,7 +209,7 @@ class savonius():
             L_finesse = [] 
             f.readline()
             for ligne in f :
-                a,b, cx, cy = ligne.split()
+                cx, cy = ligne.split()[-2:]
                 cx, cy = -float(cx), -float(cy)
                 if cx*cy == 0.:
                     L_finesse.append(-100)  # On a quelque chose de ridicule comme ça   

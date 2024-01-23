@@ -1,1 +1,0 @@
-DRL avec modèle hassan 4 blades sans contraintes (jonction seulement).
