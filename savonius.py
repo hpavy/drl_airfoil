@@ -192,8 +192,8 @@ class savonius():
         os.system('rm -r '+self.output_path+'cfd_savonius')
         
         # Save
-        os.system('cp -r '+self.vtu_path+'bulles_00450.vtu ./video/')
-        os.system('mv ./video/bulles_00450.vtu '+'./video/video_'+str(self.episode)+'.vtu')
+        os.system('cp -r '+self.vtu_path+'bulles_00150.vtu ./video/')
+        os.system('mv ./video/bulles_00150.vtu '+'./video/video_'+str(self.episode)+'.vtu')
   
         # Compute reward
         with open('./cfd_savonius/Resultats/Efforts.txt', 'r') as f:
